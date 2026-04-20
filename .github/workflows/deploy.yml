@@ -14,8 +14,12 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Acessa a pasta do site
-            cd /var/www/136.248.68.173/htdocs/wp-content
+            # -----------------------------------------------
+            # IMPORTANTE: O pull deve ser feito em htdocs/
+            # (pai do wp-content), não dentro de wp-content/
+            # Isso evita o aninhamento wp-content/wp-content
+            # -----------------------------------------------
+            cd /var/www/136.248.68.173/htdocs
 
             # Puxa o código atualizado
             git pull origin main
