@@ -1,0 +1,11 @@
+# Ignorar banco de dados do docker
+db_data/
+
+# Ignorar arquivos pesados e de cache do WordPress
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+
+# Ignorar arquivos do Mac/Windows
+.DS_Store
+Thumbs.db
