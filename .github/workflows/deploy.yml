@@ -7,7 +7,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Acesso SSH e Git Pull
+      - name: Acesso SSH, Git Pull e Correção de Permissões
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -16,7 +16,27 @@ jobs:
           script: |
             # Acessa a pasta do site
             cd /var/www/136.248.68.173/htdocs/wp-content
+
             # Puxa o código atualizado
             git pull origin main
-            # Corrige permissões para o Nginx
+
+            # -----------------------------------------------
+            # CORREÇÃO DE PERMISSÕES (necessário pós git pull)
+            # O git pull cria arquivos como dono 'ubuntu', mas
+            # o Nginx/WordOps exige que o dono seja 'www-data'
+            # -----------------------------------------------
+
+            # 1. Corrige o proprietário recursivamente
             sudo chown -R www-data:www-data /var/www/136.248.68.173/htdocs/wp-content
+
+            # 2. Garante 755 em todos os diretórios
+            sudo find /var/www/136.248.68.173/htdocs/wp-content -type d -exec chmod 755 {} \;
+
+            # 3. Garante 644 em todos os arquivos
+            sudo find /var/www/136.248.68.173/htdocs/wp-content -type f -exec chmod 644 {} \;
+
+            # -----------------------------------------------
+            # LIMPEZA DE CACHE (força Nginx/FastCGI a recarregar)
+            # -----------------------------------------------
+            sudo wo stack restart --nginx
+
